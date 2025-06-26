@@ -81,13 +81,21 @@ class HomeScreen extends StatelessWidget {
             // perintah untuk update
           },
           tileColor: Colors.white,
+          // Mengubah kondisi icon checked-nya sesuai dengan data Todo
+          // ↓ ↓ ↓ ↓ ↓ ↓
           leading: Icon(
-            Icons.check_box_rounded,
+            todoList[todoIndex].selesai
+                ? Icons.check_box_rounded
+                : Icons.check_box_outline_blank,
             color: Colors.blue,
           ),
-          title: Text("Judul Todo ke $todoIndex"),
+          // Mengubah judulnya sesuai dengan data Todo
+          // ↓ ↓ ↓ ↓ ↓ ↓
+          title: Text(todoList[todoIndex].judul),
+          // Mengubah deskripsinya sesuai dengan data Todo
+          // ↓ ↓ ↓ ↓ ↓ ↓
           subtitle: Text(
-            "Deskripsi Todo ke $todoIndex",
+            todoList[todoIndex].deskripsi,
             style: const TextStyle(color: Colors.grey),
           ),
           trailing: IconButton(
@@ -161,12 +169,14 @@ class HomeScreen extends StatelessWidget {
                 child: ListView.builder(
                   padding: const EdgeInsets.only(
                       top: 20, left: 20, right: 20, bottom: 50),
-                  itemCount: 10,
+                  // Sesuaikan jumlah item dengan data yang ada
+                  itemCount: todoList.length + 1, // +1 untuk header "All ToDo's"
                   itemBuilder: (context, index) {
                     if (index == 0) {
-                      return listViewTitle();
+                      return listViewTitle(); // Tampilkan header
                     } else {
-                      return cardItem(index);
+                      // Index dikurangi 1 karena index 0 digunakan untuk header
+                      return cardItem(index - 1);
                     }
                   },
                 ),
