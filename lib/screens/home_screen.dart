@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../models/todo.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   // List: sekumpulan todo yang akan ditampilkan
   final List<Todo> todoList = [
     Todo(
@@ -44,8 +49,16 @@ class HomeScreen extends StatelessWidget {
     ),
   ];
 
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
+  void tambahTodo(Todo todo) {
+    setState(() {
+      todoList.add(todo);
+    });
+  }
+
   // Fungsi: untuk menampilkan tulisan/judul "All ToDo's"
-  // ↓ ↓ ↓ ↓ ↓ ↓
   Widget listViewTitle() {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -62,7 +75,6 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Fungsi: untuk menampilkan satu buah todo
-  // ↓ ↓ ↓ ↓ ↓ ↓
   Widget cardItem(int todoIndex) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -170,7 +182,8 @@ class HomeScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(
                       top: 20, left: 20, right: 20, bottom: 50),
                   // Sesuaikan jumlah item dengan data yang ada
-                  itemCount: todoList.length + 1, // +1 untuk header "All ToDo's"
+                  itemCount: todoList.length + 1,
+                  // +1 untuk header "All ToDo's"
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return listViewTitle(); // Tampilkan header
@@ -190,7 +203,8 @@ class HomeScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue[300],
         onPressed: () {
-          // perintah untuk membuat todo baru
+          // Pada saat ditekan, memanggil showModal()
+          showModal(context);
         },
         child: Icon(
           Icons.add,
@@ -198,5 +212,108 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Fungsi: untuk menampilkan modal bottom
+  void showModal(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          final keyboardBottomPadding =
+              MediaQuery.of(context).viewInsets.bottom;
+
+          return Padding(
+            padding: EdgeInsets.only(
+                left: 25, right: 25, bottom: 25 + keyboardBottomPadding),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Widget: label/tulisan "Todo Title" untuk TextField "Todo Title"
+                  // ↓↓↓↓↓↓
+                  const Padding(
+                    padding: EdgeInsets.only(top: 33, bottom: 8),
+                    child: Text(
+                      "ToDo Title",
+                    ),
+                  ),
+                  // Widget: TextField "Email"
+                  // ↓↓↓↓↓↓
+                  TextField(
+                    controller: titleController,
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: const BorderSide(
+                          color: Colors.black,
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+                  // Widget: label/tulisan "ToDo Description" untuk TextField "ToDo Description"
+                  // ↓↓↓↓↓↓
+                  const Padding(
+                    padding: EdgeInsets.only(top: 33, bottom: 8),
+                    child: Text(
+                      "ToDo Description",
+                    ),
+                  ),
+                  // Widget: TextField "ToDo Description"
+                  // ↓↓↓↓↓↓
+                  TextField(
+                    controller: descriptionController,
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: const BorderSide(
+                          color: Colors.black,
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+                  // Widget: untuk membuat button "Add Todo"
+                  // ↓↓↓↓↓↓
+                  Container(
+                    height: 82,
+                    width: double.maxFinite,
+                    padding: const EdgeInsets.only(top: 24),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        backgroundColor: Colors.blue,
+                      ),
+                      onPressed: () {
+                        // Action pada saat tombol "add ToDo" ditekan
+                        tambahTodo(
+                          Todo(
+                            judul: titleController.text,
+                            deskripsi: descriptionController.text,
+                          ),
+                        );
+
+                        // Bersihkan Field
+                        titleController.clear();
+                        descriptionController.clear();
+                        // Tutup modalBottomDialog()
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Add ToDo"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
