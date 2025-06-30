@@ -58,6 +58,17 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // Fungsi: aksi untuk memperbarui todo dari list
+  // ↓ ↓ ↓ ↓ ↓ ↓
+  void perbaruiTodo(Todo currentTodo, Todo updatedTodo) {
+    int indexTodo = todoList.indexOf(currentTodo);
+
+    setState(() {
+      todoList[indexTodo].judul = updatedTodo.judul;
+      todoList[indexTodo].deskripsi = updatedTodo.deskripsi;
+    });
+  }
+
   // Fungsi: untuk menampilkan tulisan/judul "All ToDo's"
   Widget listViewTitle() {
     return Container(
@@ -89,8 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () {
             // perintah checklist/uncheck
           },
+          // Action pada saat item ditekan
+          // ↓ ↓ ↓ ↓ ↓ ↓
           onLongPress: () {
-            // perintah untuk update
+            showModal(todoList[todoIndex]); // kita mengirim todo yang akan diedit
           },
           tileColor: Colors.white,
           // Mengubah kondisi icon checked-nya sesuai dengan data Todo
@@ -199,12 +212,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       // Widget: floating button/tombol "tambah" di pojok kanan bawah
-      // ↓ ↓ ↓ ↓ ↓ ↓
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue[300],
         onPressed: () {
           // Pada saat ditekan, memanggil showModal()
-          showModal(context);
+          // ↓ ↓ ↓ ↓ ↓ ↓
+          showModal(); // null karena kita hendak menambahkan todo baru
         },
         child: Icon(
           Icons.add,
@@ -215,105 +228,130 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Fungsi: untuk menampilkan modal bottom
-  void showModal(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) {
-          final keyboardBottomPadding =
-              MediaQuery.of(context).viewInsets.bottom;
+  void showModal([Todo? todo]) {
+    // Jika data ToDo tidak kosong, maka berikan nilai ke TextField
+    // ↓ ↓ ↓ ↓ ↓ ↓
+    if (todo != null) {
+      titleController.text = todo.judul;
+      descriptionController.text = todo.deskripsi;
+    } else {
+      titleController.clear();
+      descriptionController.clear();
+    }
 
-          return Padding(
-            padding: EdgeInsets.only(
-                left: 25, right: 25, bottom: 25 + keyboardBottomPadding),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Widget: label/tulisan "Todo Title" untuk TextField "Todo Title"
-                  // ↓↓↓↓↓↓
-                  const Padding(
-                    padding: EdgeInsets.only(top: 33, bottom: 8),
-                    child: Text(
-                      "ToDo Title",
-                    ),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        final keyboardBottomPadding = MediaQuery.of(context).viewInsets.bottom;
+
+        return Padding(
+          padding: EdgeInsets.only(
+              left: 25, right: 25, bottom: 25 + keyboardBottomPadding),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Widget: label/tulisan "Todo Title" untuk TextField "Todo Title"
+                // ↓ ↓ ↓ ↓ ↓ ↓
+                const Padding(
+                  padding: EdgeInsets.only(top: 33, bottom: 8),
+                  child: Text(
+                    "ToDo Title",
                   ),
-                  // Widget: TextField "Email"
-                  // ↓↓↓↓↓↓
-                  TextField(
-                    controller: titleController,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          color: Colors.black,
-                        ),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                  ),
-                  // Widget: label/tulisan "ToDo Description" untuk TextField "ToDo Description"
-                  // ↓↓↓↓↓↓
-                  const Padding(
-                    padding: EdgeInsets.only(top: 33, bottom: 8),
-                    child: Text(
-                      "ToDo Description",
-                    ),
-                  ),
-                  // Widget: TextField "ToDo Description"
-                  // ↓↓↓↓↓↓
-                  TextField(
-                    controller: descriptionController,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          color: Colors.black,
-                        ),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
+                ),
+                // Widget: TextField "Email"
+                // ↓ ↓ ↓ ↓ ↓ ↓
+                TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: const BorderSide(
+                        color: Colors.black,
                       ),
                     ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
-                  // Widget: untuk membuat button "Add Todo"
-                  // ↓↓↓↓↓↓
-                  Container(
-                    height: 82,
-                    width: double.maxFinite,
-                    padding: const EdgeInsets.only(top: 24),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        backgroundColor: Colors.blue,
+                ),
+                // Widget: label/tulisan "ToDo Description" untuk TextField "ToDo Description"
+                // ↓ ↓ ↓ ↓ ↓ ↓
+                const Padding(
+                  padding: EdgeInsets.only(top: 33, bottom: 8),
+                  child: Text(
+                    "ToDo Description",
+                  ),
+                ),
+                // Widget: TextField "ToDo Description"
+                // ↓ ↓ ↓ ↓ ↓ ↓
+                TextField(
+                  controller: descriptionController,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: const BorderSide(
+                        color: Colors.black,
                       ),
-                      onPressed: () {
-                        // Action pada saat tombol "add ToDo" ditekan
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+                // Widget: tombol Add/Update Todo
+                // ↓ ↓ ↓ ↓ ↓ ↓
+                Container(
+                  height: 82,
+                  width: double.maxFinite,
+                  padding: const EdgeInsets.only(top: 24),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      backgroundColor: Colors.blue,
+                    ),
+                    onPressed: () {
+                      // Kondisi berbeda untuk Create dan Update
+                      // ↓ ↓ ↓ ↓ ↓ ↓
+                      if (todo != null) {
+                        // Update Todo yang sudah ada
+                        perbaruiTodo(
+                          todo,
+                          Todo(
+                            judul: titleController.text,
+                            deskripsi: descriptionController.text,
+                          ),
+                        );
+                      } else {
+                        // Tambah Todo baru
                         tambahTodo(
                           Todo(
                             judul: titleController.text,
                             deskripsi: descriptionController.text,
                           ),
                         );
+                      }
 
-                        // Bersihkan Field
-                        titleController.clear();
-                        descriptionController.clear();
-                        // Tutup modalBottomDialog()
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Add ToDo"),
-                    ),
+                      // Bersihkan Field
+                      titleController.clear();
+                      descriptionController.clear();
+                      // Tutup modalBottomDialog()
+                      Navigator.pop(context);
+                    },
+                    // Berikan kondisi tulisan pada tombol
+                    // ↓ ↓ ↓ ↓ ↓ ↓
+                    child: Text(todo == null ? "Add ToDo" : "Update ToDo"),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }
