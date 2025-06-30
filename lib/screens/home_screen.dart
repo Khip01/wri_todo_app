@@ -52,6 +52,25 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
+  // Fungsi: aksi untuk mengubah status checklist dari todo
+  // ↓ ↓ ↓ ↓ ↓ ↓
+  void checklisTodo(Todo todo) {
+    // Buat todo baru dengan status 'selesai' yang dibalik
+    Todo todoBaru = Todo(
+      judul: todo.judul,
+      deskripsi: todo.deskripsi,
+      selesai: !todo.selesai,  // Membalikkan nilai boolean
+    );
+
+    // Cari index todo yang akan diubah
+    int indexTodo = todoList.indexOf(todo);
+
+    // Update todo dengan setState agar UI terupdate
+    setState(() {
+      todoList[indexTodo] = todoBaru;
+    });
+  }
+
   // Fungsi: aksi untuk menghapus todo dari list
   // Tambahkan parameter ToDo untuk mengambil informasi todo yang ingin dihapus
   // ↓ ↓ ↓ ↓ ↓ ↓
@@ -159,10 +178,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          // Tambahkan event onTap untuk checklist todo
+          // ↓ ↓ ↓ ↓ ↓ ↓
           onTap: () {
-            // perintah checklist/uncheck
+            checklisTodo(todoList[todoIndex]);
           },
-          // Action pada saat item ditekan
+          // Event onLongPress untuk update
           // ↓ ↓ ↓ ↓ ↓ ↓
           onLongPress: () {
             showModal(todoList[todoIndex]); // kita mengirim todo yang akan diedit
