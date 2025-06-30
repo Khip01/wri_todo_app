@@ -52,13 +52,75 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
+  // Fungsi: aksi untuk menghapus todo dari list
+  // Tambahkan parameter ToDo untuk mengambil informasi todo yang ingin dihapus
+  // ↓ ↓ ↓ ↓ ↓ ↓
+  void hapusTodo(Todo todo){
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          // Judul dialog
+          // ↓ ↓ ↓ ↓ ↓ ↓
+          title: const Text("Konfirmasi Hapus"),
+          icon: Icon(
+            Icons.warning_rounded,
+            color: Colors.red[400],
+            size: 120,
+          ),
+          // Deskripsi dialog dengan nama Todo
+          // ↓ ↓ ↓ ↓ ↓ ↓
+          content: Text(
+            "Apakah anda yakin untuk menghapus todo \"${todo.judul}\" ",
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              // action jika tombol batal ditekan
+              onPressed: () {
+                // Tutup dialog tanpa menghapus
+                // ↓ ↓ ↓ ↓ ↓ ↓
+                Navigator.pop(context);
+              },
+              child: const Text(
+                "Batal",
+                style: TextStyle(color: Colors.blueGrey),
+              ),
+            ),
+            ElevatedButton(
+              // action jika tombol konfirmasi hapus ditekan
+              onPressed: () {
+                // Hapus Todo dari list
+                // ↓ ↓ ↓ ↓ ↓ ↓
+                setState(() {
+                  todoList.remove(todo);
+                });
+                // Tutup dialog
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: const Text(
+                "Hapus",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Fungsi: aksi untuk menambahkan todo baru
+  // ↓ ↓ ↓ ↓ ↓ ↓
   void tambahTodo(Todo todo) {
     setState(() {
       todoList.add(todo);
     });
   }
 
-  // Fungsi: aksi untuk memperbarui todo dari list
+  // Fungsi: aksi untuk memperbarui salah satu todo dari list
   // ↓ ↓ ↓ ↓ ↓ ↓
   void perbaruiTodo(Todo currentTodo, Todo updatedTodo) {
     int indexTodo = todoList.indexOf(currentTodo);
@@ -125,7 +187,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           trailing: IconButton(
             onPressed: () {
-              // perintah hapus
+              // Panggil fungsi hapus dengan parameter Todo
+              // ↓ ↓ ↓ ↓ ↓ ↓
+              hapusTodo(todoList[todoIndex]);
             },
             icon: Icon(
               Icons.delete,
